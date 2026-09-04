@@ -22,7 +22,7 @@ Note that this project is not endorsed by the LEGO Company, owners of the regist
 ## Current Status
 
 The performance improvements of PicoDMG (thank you, dodger_one!) are working successfully.
-The loading screen (animation) is temporarily disabled as this currently interferes with file loading.
+The loading screen (animation) is temporarily disabled, as this seems to interfere with SD card file loading.
 The NFC code is still present for now, but it is intended to remove this, as the Game Brick will not use NFC to identify cartridge presence.
 Some colour palette automatic selections have been adjusted.
 
@@ -33,9 +33,9 @@ Work in progress is:
 - reinstate a loading screen
 
 
-## (no) Quick Start (yet!)
+## (No) Quick Start (yet!)
 
-At the moment, the only way to explore this project is to compile the source code (there is no precompiled .uf2 yet)
+At the moment, the only way to explore this project is to compile the source code (there is no precompiled .uf2 yet). 
 It is necessary to install the Raspberry Pi Pico SDK, e.g. by adding the extension to VSCode. In VSCode it is also necessary, after cloning the repository or opening the unzipped folder, to import the project into the Raspberry Pi Pico extension (by clicking Import Project).
 
 Compiling requires two Terminal commands, the same as documented for PicoDMG - one to set up (with optional build flags);
