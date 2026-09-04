@@ -1,112 +1,92 @@
-# PicoDMG
+This project is a fork of the PicoDMG fork by dodger_one, which in turn is a fork of [RP2040-GB for Pico-GB by YouMakeTech](https://github.com/YouMakeTech/Pico-GB), ultimately based on the Peanut-GB emulator.
 
-> A Game Boy rebuilt with modern hardware — but still powered by AA batteries.
+The goal of this fork is to provide the firmware for 'Game Brick', a device to fit within the LEGO(R) set 72046.
+The hardware combines a Raspberry Pi Pico 2, an SPI MicroSD card reader, ST7789 2.8" 320x240 LCD (SPI-driven), a MAX98357 audio amplifier with 8 ohm speaker, and a custom button panel. Pin assignments for these modules are the same as for PicoDMG and Pico-GB.
 
-This project is a fork of the [RP2040-GB for Pico-GB by YouMakeTech](https://github.com/YouMakeTech/Pico-GB), ultimately based on the Peanut-GB emulator.
+PCB design is in the prototype stage. PCBs or completed devices may be sold in the future, but no earlier than November 2026.
+As a low-cost project, this device will not directly compete with the existing solutions on the market, as the feature set is limited to only original Game Boy DMG emulation, there are fewer hardware features (no headphone socket, no volume/contrast knobs) and a compromise in display accuracy (for scrolling and movement) as a result of the non-integer scaling. There are also simplifications in the LEGO(R) build to accomodate the device; the display bezel must be replaced with a 3D-printed part, instead of fitting into or behind the brick-built display window. The power is supplied from 2x AA cells, rather than a rechargeable lithium battery.
 
-PicoDMG aims to recreate the original Nintendo Game Boy (DMG) experience as faithfully as possible, using modern hardware while preserving the original look and feel.
-
-The goal is not just emulation, but reconstruction:
-
-- Original DMG shell
-- Original DMG-LCD-06 board (buttons and input)
-- Real AA batteries for power
-
-Despite running on RP2040 / RP2350 microcontrollers, the device behaves and feels like an authentic Game Boy.
-
-As a twist, the project also introduces an NFC-based system to "load" games: original cartridges can be scanned, and the emulator loads the corresponding ROM from microSD — blending physical interaction with modern storage.
-
-> PicoDMZ is now PicoDMG.
-> Please update your links — I think this is a much better name for the project (the old one started as an internal joke 😄)
+Note that the project is not endorsed by the LEGO Company, owners of the registered trademark LEGO(R).
 
 ## What This Fork Focuses On
 
-- RP2350 and RP2040 support
-- SPI display integration and tuning
-- Original DMG hardware adaptation
-- Audio output on embedded hardware
-- NFC tag to ROM mapping
-- Performance work toward full-speed gameplay
+- RP2350 support only (can likely still be compiled for RP2040 but that will not be the focus)
+- SD card file browser with clearer text/selection and tolerance for long file names
+- Display right-align to suit the Game Brick device
+- Automatic colour palette re-enabled (applies colour palette based on game header)
+- (not added yet) Battery low voltage indication by illuminating the unused LCD area on the left
+- (not added yet) Select+B (or similar combination) to turn display scaling off
+  (when scaling is on, the 160x144 Game Boy display is scaled up to 266x240, which doubles some pixels and not others)
 
 ## Current Status
 
-The emulator is running on real hardware and is close to full-speed performance.
+The performance improvements of PicoDMG (thank you, dodger_one!) are working successfully.
+The loading screen (animation) is temporarily disabled as this currently interferes with file loading.
+The NFC code is still present for now, but it is intended to remove this, as the Game Brick will not use NFC to identify cartridge presence.
+Some colour palette automatic selections have been adjusted.
 
-The current focus is on:
+Work in progress is:
+- prevent the unwanted display of pixel lines to the left of the display area
+- monitor the VSYS supply voltage and display a red rectangle, to the left of the display area
+- modify existing button-polling to add the display scaling toggle on/off
+- reinstate a loading screen
 
-- pushing toward stable 59.75 FPS (met 99% of the time)
-- refining hardware behavior
-- documenting the system properly
 
-In short: it works — now it's being pushed to its limits.
+## (no) Quick Start (yet!)
 
-### DEMO
+At the moment, the only way to explore this project is to compile the source code (there is no precompiled .uf2 yet)
+It is necessary to install the Raspberry Pi Pico SDK (e.g. by adding the extension to VSCode)
+Compiling requires two Terminal commands, the same as documented for PicoDMG;
+```bash
+cmake -S . -B build_pico2 -G Ninja -DPICO_BOARD=pico2 -DDISPLAY_DRIVER=ST7789
+cmake --build build_pico2 -j --target RP2040_GB
+```
+Note; the target is RP2040_GB even when compiling for the Pico2.
 
-<div align="center">
-  <img src="docs/media/demo.gif" width="400" alt="Demo">
-</div>
-
-See the v1.1.1 demo on the [devlog](https://dodger-one.github.io/PicoDMG/) and more videos on [peertube](https://gnulinux.tube/c/picodmg/videos).
-
-## Quick Start
-
-If you want to explore the project, start here:
-
-- [Project blog and devlog](https://dodger-one.github.io/PicoDMG/)
-- [Technical documentation index](docs/tech/index.md)
-- [Build guide](docs/tech/build.md)
-- [Hardware notes](docs/tech/hardware.md)
-- [ST7789 display notes](docs/tech/display-st7789.md)
-- [NFC workflow](docs/tech/nfc.md)
 
 ## Hardware At A Glance
 
 The current build/documentation assumes combinations of:
 
-- Raspberry Pi Pico (RP2040) or Pico 2 (RP2350)
-- 2.8" SPI TFT display (e.g. ST7789)
+- Raspberry Pi Pico 2 (RP2350)
+- 2.8" SPI TFT display (ST7789)
 - microSD storage for ROMs
 - MAX98357A for audio
-- Original DMG-LCD-06 button board reuse
-- Original Shell or clone
-- "Optional" RC522 NFC reader
+- D-pad and A/B, Start and Select buttons wired as for YouMakeTech's Pico-GB:
 
-See the [hardware notes](docs/tech/hardware.md) for pin mapping and wiring details.
+UP = GP2
+DOWN = GP3
+LEFT = GP4
+RIGHT = GP5
+BUTTON A = GP6
+BUTTON B = GP7
+SELECT = GP8
+START = GP9
+SD MISO = GP12
+SD CS = GP13
+SD CSK = GP14
+SD MOSI = GP15
+LCD CS = GP17
+LCD CLK = GP18
+LCD SDI = GP19
+LCD RS = GP20
+LCD RST = GP21
+LCD LED = GP22
+MAX98357A DIN = GP26
+MAX98357A BCLK = GP27
+MAX98357A LRC = GP28
 
-## Documentation Model
 
-This repository now separates documentation into two tracks:
-
-- `README.md` is the public landing page for the repository.
-- `docs/` contains the project blog plus focused technical reference material.
-
-The blog is intended for chronological build and implementation posts. The technical pages are maintained as plain Markdown reference documents.
 
 ## Credits
 
 This project builds on prior work from:
 
-- [Peanut-GB](https://github.com/deltabeard/Peanut-GB)
+- [PicoDMG by dodger-one](https://github.com/dodger-one/PicoDMG)
 - [Pico-GB / RP2040-GB by YouMakeTech](https://github.com/YouMakeTech/Pico-GB)
-
-Major changes in this fork include hardware adaptation, display work, audio integration, NFC support, and performance tuning for the DMG-style build.
+- [Peanut-GB](https://github.com/deltabeard/Peanut-GB)
 
 ## Original Upstream README
 
-The preserved historical README is available at [docs/original_README.md](docs/original_README.md).
+The preserved historical README from dodger-one is available at [README.md](https://github.com/dodger-one/PicoDMG/blob/master/README.md).
 
-## Author
-
-Built by [dodger](https://cv.ciberterminal.net)
-
-Long-time systems engineer exploring what happens when you try to squeeze a 1989 console into modern microcontrollers.
-
-Mostly interested in performance limits, weird bugs, and making things work when they probably shouldn’t.
-
-## 🍺 Beer-powered development since 2026
-
-If you enjoy weird embedded projects, retro hardware reconstruction, or just want to help fund more experiments, consider supporting PicoDMG:
-
-- [Liberapay](https://liberapay.com/dodger-one/)
-
-Every beer helps fund the next bad hardware decision 🍺😄🍺
