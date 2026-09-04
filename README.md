@@ -3,9 +3,7 @@
 This project is a fork of the [PicoDMG fork by dodger_one](https://github.com/dodger-one/PicoDMG), which in turn is a fork of [RP2040-GB for Pico-GB by YouMakeTech](https://github.com/YouMakeTech/Pico-GB), ultimately based on the Peanut-GB emulator.
 
 The goal of this fork is to provide the firmware for 'Game Brick', a device to fit within the LEGO(R) set 72046.
-The hardware combines a Raspberry Pi Pico 2, an SPI MicroSD card reader, ST7789 2.8" 320x240 LCD (SPI-driven), a MAX98357 audio amplifier with 8 ohm speaker, and a custom button panel. Pin assignments for these modules are the same as for PicoDMG and Pico-GB.
-
-PCB design is in the prototype stage. PCBs or completed devices may be for sale in the future, but no earlier than November 2026. The firmware will always remain open-source and full license/legal disclaimer is explained in the code.
+The hardware combines a Raspberry Pi Pico 2, an SPI MicroSD card reader, ST7789 2.8" 320x240 LCD (SPI-driven), a MAX98357 audio amplifier with 8 ohm speaker, and a custom button panel. Pin assignments for these modules are the same as for PicoDMG and Pico-GB. PCB design is in the prototype stage. The firmware will always remain open-source and full license/legal disclaimer is explained in the code.
 
 As a low-cost project, this device will not directly compete with the existing solutions on the market, as the feature set is limited to only original Game Boy DMG emulation, there are fewer hardware features (no headphone socket, no volume/contrast knobs) and a compromise in display quality (for scrolling and movement) as a result of the non-integer scaling. There are also simplifications in the LEGO(R) build to accomodate the device (compared to others); the display bezel must be replaced with a 3D-printed part, instead of fitting into or behind the brick-built display window. The power is supplied from 2x AA cells, rather than a rechargeable lithium battery.
 
