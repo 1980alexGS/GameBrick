@@ -1,3 +1,5 @@
+5 September - please note, I am still feeling my way around GitHub (it's my first time) so I have not yet synchronised the local changes I have made to my fork. I expect to synchronise these in the next few days; thank you for your patience.
+
 This project is a fork of the [PicoDMG fork by dodger_one](https://github.com/dodger-one/PicoDMG), which in turn is a fork of [RP2040-GB for Pico-GB by YouMakeTech](https://github.com/YouMakeTech/Pico-GB), ultimately based on the Peanut-GB emulator.
 
 The goal of this fork is to provide the firmware for 'Game Brick', a device to fit within the LEGO(R) set 72046.
