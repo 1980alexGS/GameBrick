@@ -3,10 +3,11 @@ This project is a fork of the [PicoDMG fork by dodger_one](https://github.com/do
 The goal of this fork is to provide the firmware for 'Game Brick', a device to fit within the LEGO(R) set 72046.
 The hardware combines a Raspberry Pi Pico 2, an SPI MicroSD card reader, ST7789 2.8" 320x240 LCD (SPI-driven), a MAX98357 audio amplifier with 8 ohm speaker, and a custom button panel. Pin assignments for these modules are the same as for PicoDMG and Pico-GB.
 
-PCB design is in the prototype stage. PCBs or completed devices may be sold in the future, but no earlier than November 2026.
-As a low-cost project, this device will not directly compete with the existing solutions on the market, as the feature set is limited to only original Game Boy DMG emulation, there are fewer hardware features (no headphone socket, no volume/contrast knobs) and a compromise in display accuracy (for scrolling and movement) as a result of the non-integer scaling. There are also simplifications in the LEGO(R) build to accomodate the device; the display bezel must be replaced with a 3D-printed part, instead of fitting into or behind the brick-built display window. The power is supplied from 2x AA cells, rather than a rechargeable lithium battery.
+PCB design is in the prototype stage. PCBs or completed devices may be for sale in the future, but no earlier than November 2026. The firmware will always remain open-source and full license/legal disclaimer is explained in the code.
 
-Note that the project is not endorsed by the LEGO Company, owners of the registered trademark LEGO(R).
+As a low-cost project, this device will not directly compete with the existing solutions on the market, as the feature set is limited to only original Game Boy DMG emulation, there are fewer hardware features (no headphone socket, no volume/contrast knobs) and a compromise in display quality (for scrolling and movement) as a result of the non-integer scaling. There are also simplifications in the LEGO(R) build to accomodate the device (compared to others); the display bezel must be replaced with a 3D-printed part, instead of fitting into or behind the brick-built display window. The power is supplied from 2x AA cells, rather than a rechargeable lithium battery.
+
+Note that this project is not endorsed by the LEGO Company, owners of the registered trademark LEGO(R).
 
 ## What This Fork Focuses On
 
@@ -37,9 +38,12 @@ Work in progress is:
 At the moment, the only way to explore this project is to compile the source code (there is no precompiled .uf2 yet)
 It is necessary to install the Raspberry Pi Pico SDK, e.g. by adding the extension to VSCode. In VSCode it is also necessary, after cloning the repository or opening the unzipped folder, to import the project into the Raspberry Pi Pico extension (by clicking Import Project).
 
-Compiling requires two Terminal commands, the same as documented for PicoDMG;
+Compiling requires two Terminal commands, the same as documented for PicoDMG - one to set up (with optional build flags);
 ```bash
 cmake -S . -B build_pico2 -G Ninja -DPICO_BOARD=pico2 -DDISPLAY_DRIVER=ST7789
+````
+And the other to (re)compile, which places a .uf2 executable file in the build_pico2\src\ folder:
+```bash
 cmake --build build_pico2 -j --target RP2040_GB
 ```
 Note; the target is RP2040_GB even when compiling for the Pico2.
