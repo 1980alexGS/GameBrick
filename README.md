@@ -35,7 +35,8 @@ Work in progress is:
 ## (no) Quick Start (yet!)
 
 At the moment, the only way to explore this project is to compile the source code (there is no precompiled .uf2 yet)
-It is necessary to install the Raspberry Pi Pico SDK (e.g. by adding the extension to VSCode)
+It is necessary to install the Raspberry Pi Pico SDK, e.g. by adding the extension to VSCode. In VSCode it is also necessary, after cloning the repository or opening the unzipped folder, to import the project into the Raspberry Pi Pico extension (by clicking Import Project).
+
 Compiling requires two Terminal commands, the same as documented for PicoDMG;
 ```bash
 cmake -S . -B build_pico2 -G Ninja -DPICO_BOARD=pico2 -DDISPLAY_DRIVER=ST7789
@@ -54,30 +55,30 @@ The current build/documentation assumes combinations of:
 - MAX98357A for audio
 - D-pad and A/B, Start and Select buttons wired as for YouMakeTech's Pico-GB:
 
-Up = GPIO2
-Down = GPIO3
-Left = GPIO4
-Right = GPIO5
-A = GPIO6
-B = GPIO7
-Select = GPIO8
-Start = GPIO9
+Up = GP2, 
+Down = GP3, 
+Left = GP4, 
+Right = GP5, 
+A = GP6, 
+B = GP7, 
+Select = GP8, 
+Start = GP9
 
-SD MISO = GPIO12
-SD CS = GPIO13
-SD CSK = GPIO14
-SD MOSI = GPIO15
+SD MISO = GP12, 
+SD CS = GP13, 
+SD CLK or SCK = GP14, 
+SD MOSI = GP15
 
-LCD CS = GPIO17
-LCD CLK = GPIO18
-LCD SDI = GPIO19
-LCD RS = GPIO20
-LCD RST = GPIO21
-LCD LED = GPIO22
+LCD CS = GP17, 
+LCD CLK or SCL = GP18, 
+LCD SDI or SDA = GP19, 
+LCD RS or DC = GP20, 
+LCD RST = GP21, 
+LCD LED or BL = GP22, 
 
-MAX98357A DIN = GPIO26
-MAX98357A BCLK = GPIO27
-MAX98357A LRC = GPIO28
+MAX98357A DIN = GP26, 
+MAX98357A BCLK = GP27, 
+MAX98357A LRC = GP28
 
 
 ## Credits
