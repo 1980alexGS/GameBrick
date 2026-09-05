@@ -13,7 +13,15 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-// Peanut-GB emulator settings
+#ifndef ENABLE_LOADING_ANIM  // Disable loading animation 
+#define ENABLE_LOADING_ANIM 0
+#endif
+
+#ifndef AUTO_PALETTE  // Set palette automatically from ROM header
+#define AUTO_PALETTE 1
+#endif
+
+ // Peanut-GB emulator settings
 #ifndef ENABLE_LCD
 #define ENABLE_LCD 1
 #endif
@@ -111,7 +119,7 @@
 #define GPIO_RST 21
 #define GPIO_LED 22
 
-#define ROM_SELECTOR_PAGE_SIZE 22
+#define ROM_SELECTOR_PAGE_SIZE 20
 #define ROM_SELECTOR_AUTOSTART_US (10ULL * 1000ULL * 1000ULL)
 #ifndef DEFAULT_INTERLACE
 #define DEFAULT_INTERLACE 0
@@ -130,7 +138,7 @@
 #endif
 
 #if defined(DISPLAY_ST7789)
-#define ROM_SELECTOR_X 42u
+#define ROM_SELECTOR_X 54u  // Was 42u
 #define ROM_SELECTOR_Y 0u
 #define LOADING_SCREEN_X 18u
 #define LOADING_SCREEN_WIDTH 320u
@@ -142,6 +150,7 @@
 #define LOADING_SCREEN_WIDTH SCREEN_SIZE_X
 #define LOADING_SCREEN_HEIGHT SCREEN_SIZE_Y
 #endif
+
 
 #define LOADING_ANIM_FALL_DURATION_US (3ULL * 1000ULL * 1000ULL)
 #define LOADING_ANIM_MIN_VISIBLE_US (4ULL * 1000ULL * 1000ULL)
@@ -169,7 +178,7 @@ static bool i2s_config_ready = false;
  * We're going to erase and reprogram a region 1Mb from the start of the flash
  * Once done, we can access this at XIP_BASE + 1Mb.
  * Game Boy DMG ROM size ranges from 32768 bytes (e.g. Tetris) to 1,048,576
- * bytes (e.g. Pokemod Red)
+ * bytes (e.g. Pokemon Red)
  */
 #define FLASH_TARGET_OFFSET (1024 * 1024)
 #define ROM_FLASH_MAX_SIZE (1024 * 1024)
@@ -198,7 +207,7 @@ static void ensure_lcd_core_running(void);
 _Noreturn void main_core1(void);
 
 #define LCD_LINE_QUEUE_DEPTH 8u
-static uint8_t pixels_buffer[LCD_LINE_QUEUE_DEPTH][LCD_WIDTH];
+static uint8_t pixels_buffer[LCD_LINE_QUEUE_DEPTH][LCD_WIDTH]; // This does not need to be wider
 static volatile uint8_t lcd_line_slot_state[LCD_LINE_QUEUE_DEPTH];
 static uint8_t lcd_write_slot = 0u;
 
@@ -685,8 +694,12 @@ static void build_save_filename(struct gb_s *gb, char *filename,
 
 static inline void rom_selector_text(char *text, uint8_t row, uint16_t color,
                                      uint16_t bgcolor) {
-  mk_ili9225_text(text, ROM_SELECTOR_X, (uint8_t)(ROM_SELECTOR_Y + row * 8u),
-                  color, bgcolor);
+  char display_filename[256];
+  strncpy(display_filename, "", sizeof(display_filename));
+  strncpy(display_filename, text, strlen(text)-3u);
+  display_filename[sizeof(display_filename) - 1u] = '\0';
+  mk_ili9225_text(display_filename, ROM_SELECTOR_X, (uint8_t)(ROM_SELECTOR_Y + row * 12u),
+                  color, bgcolor);  // 12 pixels per row instead of 8 to increase spacing between rows
 }
 
 static void refresh_rom_bank0(void) {
@@ -858,6 +871,10 @@ _Noreturn void main_core1(void) {
   /* Set LCD window to DMG size. */
 #if defined(DISPLAY_ILI9225)
   mk_ili9225_fill_rect(31, 16, LCD_WIDTH, LCD_HEIGHT, 0x0000);
+#endif
+
+#if defined(DISPLAY_ST7789)
+  mk_ili9225_fill_rect(0, 0, 320u, 240u, 0x0000);
 #endif
 
   // Sleep used for debugging LCD window.
@@ -1034,14 +1051,15 @@ void load_cart_rom_file(char *filename) {
   const uint8_t *flash_rom = (const uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET);
   sd_card_t *pSD = sd_get_by_num(0);
   printf("[I] ROM loading starts: %s\n", filename);
-#if ENABLE_LCD
+#if ENABLE_LCD && ENABLE_LOADING_ANIM
   ensure_lcd_core_running();
   lcd_start_loading_animation();
 #endif
   FRESULT fr = f_mount(&pSD->fatfs, pSD->pcName, 1);
   if (FR_OK != fr) {
     printf("E f_mount error: %s (%d)\n", FRESULT_str(fr), fr);
-#if ENABLE_LCD
+
+    #if ENABLE_LCD && ENABLE_LOADING_ANIM
     __atomic_store_n(&loading_anim_rom_done, true, __ATOMIC_SEQ_CST);
     lcd_wait_loading_animation_done();
 #endif
@@ -1052,7 +1070,7 @@ void load_cart_rom_file(char *filename) {
   if (fr == FR_OK) {
     uint32_t flash_target_offset = FLASH_TARGET_OFFSET;
     for (;;) {
-#if ENABLE_SOUND
+#if ENABLE_SOUND && ENABLE_LOADING_ANIM
       maybe_play_loading_boot_sound();
 #endif
       memset(buffer, 0xFF, sizeof buffer);
@@ -1100,7 +1118,7 @@ void load_cart_rom_file(char *filename) {
     printf("E f_close error: %s (%d)\n", FRESULT_str(fr), fr);
   }
   f_unmount(pSD->pcName);
-#if ENABLE_LCD
+#if ENABLE_LCD && ENABLE_LOADING_ANIM
   __atomic_store_n(&loading_anim_rom_done, true, __ATOMIC_SEQ_CST);
   lcd_wait_loading_animation_done();
 #endif
@@ -1169,6 +1187,7 @@ rom_file_selector_display_page(char filename[ROM_SELECTOR_PAGE_SIZE][256],
  */
 void rom_file_selector(const char *auto_rom_filename) {
   uint16_t num_page = 0;
+  int highlight_color = 0xF8B2; // pink highlight colour for the selected rom file
   char filename[ROM_SELECTOR_PAGE_SIZE][256];
   uint16_t num_file;
 
@@ -1180,7 +1199,7 @@ void rom_file_selector(const char *auto_rom_filename) {
 
   /* select the first rom */
   uint8_t selected = 0;
-  rom_selector_text(filename[selected], selected, 0xFFFF, 0xF800);
+  rom_selector_text(filename[selected], selected, 0xFFFF, highlight_color);
 
   if (auto_rom_filename != NULL && auto_rom_filename[0] != '\0') {
     printf("I ROM selector auto-start request: %s\n", auto_rom_filename);
@@ -1190,7 +1209,7 @@ void rom_file_selector(const char *auto_rom_filename) {
 
   /* get user's input */
   bool up, down, left, right, a, b, select, start;
-  bool autostart_enabled = true;
+  bool autostart_enabled = false;   // auto-start selected ROM if no buttons are pressed for a while
   uint64_t autostart_start_time = time_us_64();
   while (true) {
     read_button_states(&up, &down, &left, &right, &a, &b, &select, &start);
@@ -1220,7 +1239,7 @@ void rom_file_selector(const char *auto_rom_filename) {
       selected++;
       if (selected >= num_file)
         selected = 0;
-      rom_selector_text(filename[selected], selected, 0xFFFF, 0xF800);
+      rom_selector_text(filename[selected], selected, 0xFFFF, highlight_color);
       sleep_ms(150);
     }
     if (!up) {
@@ -1231,7 +1250,7 @@ void rom_file_selector(const char *auto_rom_filename) {
       } else {
         selected--;
       }
-      rom_selector_text(filename[selected], selected, 0xFFFF, 0xF800);
+      rom_selector_text(filename[selected], selected, 0xFFFF, highlight_color);
       sleep_ms(150);
     }
     if (!right) {
@@ -1245,7 +1264,7 @@ void rom_file_selector(const char *auto_rom_filename) {
       }
       /* select the first file */
       selected = 0;
-      rom_selector_text(filename[selected], selected, 0xFFFF, 0xF800);
+      rom_selector_text(filename[selected], selected, 0xFFFF, highlight_color);
       sleep_ms(150);
     }
     if ((!left) && num_page > 0) {
@@ -1254,7 +1273,7 @@ void rom_file_selector(const char *auto_rom_filename) {
       num_file = rom_file_selector_display_page(filename, num_page);
       /* select the first file */
       selected = 0;
-      rom_selector_text(filename[selected], selected, 0xFFFF, 0xF800);
+      rom_selector_text(filename[selected], selected, 0xFFFF, highlight_color);
       sleep_ms(150);
     }
     tight_loop_contents();
@@ -1436,11 +1455,16 @@ int main(void) {
       goto out;
     }
 
-    /* Default to original DMG-green palette for every game boot. */
+#if AUTO_PALETTE
+    /* Auto-detect palette from ROM header. */
     char rom_title[16];
+    auto_assign_palette(palette, gb_colour_hash(&gb), gb_get_rom_name(&gb, rom_title));
+#else    
+    /* Default to original DMG-green palette for every game boot. */
     manual_palette_selected = NUMBER_OF_MANUAL_PALETTES - 1;
     manual_assign_palette(palette, manual_palette_selected);
     printf("I default palette = %u (DMG green)\n", manual_palette_selected);
+#endif
 
 #if ENABLE_LCD
     gb_init_lcd(&gb, &lcd_draw_line);

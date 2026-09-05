@@ -40,7 +40,8 @@
 #define GB_RENDER_WIDTH   266u
 #define GB_RENDER_HEIGHT  240u
 #define GB_RENDER_X_SHIFT 18u
-#define GB_RENDER_X       (((ST7789_WIDTH - GB_RENDER_WIDTH) / 2u) + GB_RENDER_X_SHIFT)
+// #define GB_RENDER_X       (((ST7789_WIDTH - GB_RENDER_WIDTH) / 2u) + GB_RENDER_X_SHIFT)
+#define GB_RENDER_X       ST7789_WIDTH - GB_RENDER_WIDTH     // Produces a right-aligned display 
 #define GB_RENDER_Y       ((ST7789_HEIGHT - GB_RENDER_HEIGHT) / 2u)
 
 /* ST7789 commands. */
@@ -691,7 +692,8 @@ void mk_ili9225_exit(void)
     st7789_write_command(ST7789_DISPOFF);
 }
 
-void mk_ili9225_fill_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color)
+//void mk_ili9225_fill_rect(uint_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color) // Do these dimensions need to be uint16_t?
+void mk_ili9225_fill_rect(uint16_t x, uint8_t y, uint16_t w, uint8_t h, uint16_t color)
 {
     static uint8_t color_block[128];
     uint16_t x0 = x;
@@ -776,7 +778,7 @@ void mk_ili9225_pixel(uint8_t x, uint8_t y, uint16_t color)
     mk_ili9225_fill_rect(x, y, 1, 1, color);
 }
 
-void mk_ili9225_blit(uint16_t *fbuf, uint8_t x, uint8_t y, uint8_t w, uint8_t h)
+void mk_ili9225_blit(uint16_t *fbuf, uint16_t x, uint8_t y, uint16_t w, uint8_t h) // x and w must be uint16_t
 {
     static uint8_t txbuf[8 * 8 * 2];
     uint16_t x0 = x;
@@ -1509,9 +1511,9 @@ void mk_ili9225_get_letter(uint16_t *fbuf,char l,uint16_t color,uint16_t bgcolor
 	}
 }
 
-void mk_ili9225_text(char *s,uint8_t x,uint8_t y,uint16_t color,uint16_t bgcolor) {
+void mk_ili9225_text(char *s,uint16_t x,uint8_t y,uint16_t color,uint16_t bgcolor) {
 	uint16_t fbuf[8*8];
-	for(uint8_t i=0;i<strlen(s);i++) {
+	for(uint16_t i=0;i<strlen(s);i++) {  // Loop counter i must be uint16_t to avoid overflow/wrapped text
 		mk_ili9225_get_letter(fbuf,s[i],color,bgcolor);
 		mk_ili9225_blit(fbuf,x,y,8,8);
 		x+=8;

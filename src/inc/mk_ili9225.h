@@ -146,8 +146,8 @@ void mk_ili9225_exit(void);
 /**
  * Fill a rectangle at the given location, size and color.
  */
-void mk_ili9225_fill_rect(uint8_t x,uint8_t y,uint8_t w,uint8_t h,uint16_t color);
-
+// void mk_ili9225_fill_rect(uint8_t x,uint8_t y,uint8_t w,uint8_t h,uint16_t color);
+void mk_ili9225_fill_rect(uint16_t x,uint8_t y,uint16_t w,uint8_t h,uint16_t color);
 /**
  * Fill the entire screen with the specified RGB565 color
  */
@@ -161,7 +161,7 @@ void mk_ili9225_pixel(uint8_t x,uint8_t y,uint16_t color);
 /**
  * Copy the specified framebuffer at the given coordinates
  */
-void mk_ili9225_blit(uint16_t *fbuf,uint8_t x,uint8_t y,uint8_t w,uint8_t h);
+void mk_ili9225_blit(uint16_t *fbuf,uint16_t x,uint8_t y,uint16_t w,uint8_t h);
 
 /**
  * Return an 8x8 framebuffer for the given letter and color / background color
@@ -172,4 +172,4 @@ void mk_ili9225_get_letter(uint16_t *fbuf,char letter,uint16_t color,uint16_t bg
  * Write text to the screen using the the coordinates as the upper-left corner of the text.
  * All characters have dimensions of 8x8 pixels.
  */
-void mk_ili9225_text(char *s,uint8_t x,uint8_t y,uint16_t color,uint16_t bgcolor);
+void mk_ili9225_text(char *s,uint16_t x,uint8_t y,uint16_t color,uint16_t bgcolor);
