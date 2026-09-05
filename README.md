@@ -1,13 +1,11 @@
-5 September - please note, I am still feeling my way around GitHub (it's my first time) so I have not yet synchronised the local changes I have made to my fork. I expect to synchronise these in the next few days; thank you for your patience.
 
 This project is a fork of the [PicoDMG fork by dodger_one](https://github.com/dodger-one/PicoDMG), which in turn is a fork of [RP2040-GB for Pico-GB by YouMakeTech](https://github.com/YouMakeTech/Pico-GB), ultimately based on the Peanut-GB emulator.
 
-The goal of this fork is to provide the firmware for 'Game Brick', a device to fit within the LEGO(R) set 72046.
-The hardware combines a Raspberry Pi Pico 2, an SPI MicroSD card reader, ST7789 2.8" 320x240 LCD (SPI-driven), a MAX98357 audio amplifier with 8 ohm speaker, and a custom button panel. Pin assignments for these modules are the same as for PicoDMG and Pico-GB. PCB design is in the prototype stage. The firmware will always remain open-source and full license/legal disclaimer is explained in the code.
+The goal of this fork is to provide the firmware for 'Game Brick', a device to fit within the LEGO(R) set 72046. The hardware combines a Raspberry Pi Pico 2, an SPI MicroSD card reader, ST7789 2.8" 320x240 LCD (SPI-driven), a MAX98357 audio amplifier with 8 ohm speaker, and a custom button panel. Pin assignments for these modules are the same as for PicoDMG and Pico-GB. PCB design is in the prototype stage. The firmware will always remain open-source and full license/legal disclaimer is explained in the code.
 
-As a low-cost project, this device will not directly compete with the existing solutions on the market, as the feature set is limited to only original Game Boy DMG emulation, there are fewer hardware features (no headphone socket, no volume/contrast knobs) and a compromise in display quality (for scrolling and movement) as a result of the non-integer scaling. There are also simplifications in the LEGO(R) build to accomodate the device (compared to others); the display bezel must be replaced with a 3D-printed part, instead of fitting into or behind the brick-built display window. The power is supplied from 2x AA cells, rather than a rechargeable lithium battery.
+Limitations: as a low-cost project, this device will not directly compete with the existing solutions on the market. Emulation is only for playing original Game Boy (.gb) ROMs (not Game Boy Color or Game Boy Advance).There are fewer hardware features compared to the others (no headphone socket, no volume/contrast knobs) and a compromise in display quality (for scrolling and movement) as a result of the non-integer scaling. There are also simplifications in the LEGO(R) build to accomodate the device; the display bezel must be replaced with a 3D-printed part, instead of fitting into or behind the brick-built display window. The power is supplied from 2x AA cells, rather than a rechargeable lithium battery.
 
-Note that this project is not endorsed by the LEGO Company, owners of the registered trademark LEGO(R).
+Note that this project is not endorsed by the LEGO Company, owners of the registered trademark LEGO(R), nor is it licensed by Nintendo Co., Ltd. and no game ROMs are included with this project.
 
 ## What This Fork Focuses On
 
@@ -21,22 +19,25 @@ Note that this project is not endorsed by the LEGO Company, owners of the regist
 
 ## Current Status
 
+Unwanted pixels/lines to the left of the emulator display have been removed.
+
 The performance improvements of PicoDMG (thank you, dodger_one!) are working successfully.
 The loading screen (animation) is temporarily disabled, as this seems to interfere with SD card file loading.
 The NFC code is still present for now, but it is intended to remove this, as the Game Brick will not use NFC to identify cartridge presence.
-Some colour palette automatic selections have been adjusted.
+
 
 Work in progress is:
-- prevent the unwanted display of pixel lines to the left of the display area
+- optimise the automatic selection of colour palettes (a lengthy, continuing process)
 - monitor the VSYS supply voltage and display a red rectangle, to the left of the display area
 - modify existing button-polling to add the display scaling toggle on/off
 - reinstate a loading screen
 
 
-## (No) Quick Start (yet!)
+## Quick Start
 
-At the moment, the only way to explore this project is to compile the source code (there is no precompiled .uf2 yet). 
-It is necessary to install the Raspberry Pi Pico SDK, e.g. by adding the extension to VSCode. In VSCode it is also necessary, after cloning the repository or opening the unzipped folder, to import the project into the Raspberry Pi Pico extension (by clicking Import Project).
+[RP2040_GB.uf2](https://github.com/1980alexGS/GameBrick/blob/master/build_pico2/src/RP2040_GB.uf2) is a compiled .uf2 that can be uploaded to the Pico 2 (RP2350) (assuming it is configured with the other devices connected as shown below in this file).
+
+To recompile the project after you make changes, it is necessary to install the Raspberry Pi Pico SDK, e.g. by adding the extension to VSCode. In VSCode it is also necessary, after cloning the repository or opening the unzipped folder, to import the project into the Raspberry Pi Pico extension (by clicking Import Project).
 
 Compiling requires two Terminal commands, the same as documented for PicoDMG - one to set up (with optional build flags);
 ```bash
