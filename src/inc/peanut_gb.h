@@ -154,7 +154,7 @@
 
 /* Calculating VSYNC. */
 #define DMG_CLOCK_FREQ      4194304.0
-#define SCREEN_REFRESH_CYCLES 70224.0
+#define SCREEN_REFRESH_CYCLES 70197.0   //was 70224.0
 #define VERTICAL_SYNC       (DMG_CLOCK_FREQ/SCREEN_REFRESH_CYCLES)
 
 /* Real Time Clock is locked to 1Hz. */
